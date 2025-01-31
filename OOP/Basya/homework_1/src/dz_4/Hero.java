@@ -1,6 +1,8 @@
+package dz_4;
+
 public class Hero {
-    private int attackDamage;
-    private int defendPoints;
+    protected int attackDamage;
+    protected int defendPoints;
     public Hero(int attackDamage, int defendPoints) {
         this.attackDamage = attackDamage;
         this.defendPoints = defendPoints;

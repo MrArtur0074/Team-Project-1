@@ -1,4 +1,6 @@
-public class Warrior extends Hero{
+package dz_4;
+
+public class Warrior extends Hero {
     public Warrior(int attackDamage, int defendPoints) {
         super(attackDamage, defendPoints);
     };

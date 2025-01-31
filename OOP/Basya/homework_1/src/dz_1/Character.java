@@ -1,3 +1,5 @@
+package dz_1;
+
 public class Character {
     private String name;
     private int health;

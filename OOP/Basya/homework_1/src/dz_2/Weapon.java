@@ -1,5 +1,7 @@
+package dz_2;
+
 public class Weapon {
-    private int damage;
+    protected int damage;
     public Weapon(int damage) {
         this.damage = damage;
     }

@@ -1,3 +1,5 @@
+package dz_4;
+
 public class Mage extends Hero {
     public Mage(int attackDamage, int defendPoints) {
         super(attackDamage, defendPoints);

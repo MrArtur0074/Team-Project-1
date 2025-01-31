@@ -1,4 +1,6 @@
-public class Bow extends Weapon{
+package dz_2;
+
+public class Bow extends Weapon {
     public Bow(int damage) {
         super(damage);
     }
