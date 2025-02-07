@@ -1,29 +1,44 @@
-import dz_1.Character;
-import dz_4.Hero;
-import dz_5.Adventurer;
-import dz_5.Berserker;
-import dz_5.Healer;
-import dz_5.Wizard;
+
+import test_dz_1.MusicPlayer;
+import test_dz_1.VideoPlayer;
+import test_dz_2.Circle;
+import test_dz_2.Rectangle;
+import test_dz_3.Doctor;
+import test_dz_3.Patient;
+import test_dz_4.Department;
+import test_dz_4.Employee;
+import test_dz_5.Car;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        List<Adventurer> adventurers = new ArrayList<>();
-
-        adventurers.add(new Berserker("Guts", 500, 0));
-        adventurers.add(new Wizard("Geyl", 100, 500));
-        adventurers.add(new Healer("Mercy", 300, 300));
-
-        battle(adventurers);
-
-}
-
-    public static void battle(List<Adventurer> adventurers) {
-        System.out.println("===показ силы всех чемпионов===");
-        for (Adventurer adventurer : adventurers) {
-            adventurer.attack();
+        MusicPlayer spotify = new MusicPlayer();
+        VideoPlayer youtube = new VideoPlayer();
+        spotify.play();
+        spotify.pause();
+        youtube.play();
+        youtube.pause();
+        Rectangle rectangle = new Rectangle(10, 5);
+        rectangle.calculateArea();
+        rectangle.calculatePerimeter();
+        Circle circle = new Circle(10);
+        circle.calculateArea();
+        circle.calculatePerimeter();
+        Patient patient = new Patient("Эдиль");
+        Doctor doctor = new Doctor("эрлан");
+        System.out.println(patient.health);
+        doctor.treat(patient);
+        System.out.println(patient.health);
+        Employee employee1 = new Employee("Алтын", "Бэкенд");
+        Employee employee2 = new Employee("Баяс", "Фронтенд");
+        Department department = new Department("group1");
+        department.printEmployees();
+        department.addEmployee(employee1);
+        department.addEmployee(employee2);
+        department.printEmployees();
+        Car car = new Car("BMW", 140, "Hybrid");
+        car.start();
         }
     }
-}
