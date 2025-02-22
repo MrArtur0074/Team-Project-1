@@ -1,7 +1,7 @@
 package com.example.demo.Model;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 public class Booking {
@@ -9,19 +9,28 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne  // Связь с Client
+    @JoinColumn(name = "client_id") // Имя колонки в БД (FK)
     private Client client;
 
-    @ManyToOne
+    @ManyToOne  // Связь с Master
+    @JoinColumn(name = "master_id") // Имя колонки в БД (FK)
     private Master master;
 
-    @ManyToOne
-    private Service service;
+    @ManyToMany  // Связь с Item
+    @JoinTable(
+            name = "booking_item", // Имя таблицы-связки
+            joinColumns = @JoinColumn(name = "booking_id"), // Колонка для Booking
+            inverseJoinColumns = @JoinColumn(name = "item_id")  // Колонка для Item
+    )
+    private List<Item> items;
 
-    private LocalDateTime bookingTime;
-    private String status; // Например, "Подтверждено", "Отменено"
+    private String bookingDate;
 
-    // Геттеры и сеттеры
+    // Конструктор без аргументов (важно для Hibernate)
+    public Booking() {}
+
+    // Геттеры и сеттеры для всех полей (id, client, master, items, bookingDate)
     public Long getId() {
         return id;
     }
@@ -46,27 +55,19 @@ public class Booking {
         this.master = master;
     }
 
-    public Service getService() {
-        return service;
+    public List<Item> getItems() {
+        return items;
     }
 
-    public void setService(Service service) {
-        this.service = service;
+    public void setItems(List<Item> items) {
+        this.items = items;
     }
 
-    public LocalDateTime getBookingTime() {
-        return bookingTime;
+    public String getBookingDate() {
+        return bookingDate;
     }
 
-    public void setBookingTime(LocalDateTime bookingTime) {
-        this.bookingTime = bookingTime;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
+    public void setBookingDate(String bookingDate) {
+        this.bookingDate = bookingDate;
     }
 }
