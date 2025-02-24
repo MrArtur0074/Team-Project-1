@@ -1,6 +1,8 @@
 package com.example.demo.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -9,28 +11,29 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne  // Связь с Client
-    @JoinColumn(name = "client_id") // Имя колонки в БД (FK)
+    @ManyToOne(fetch = FetchType.LAZY) // Оптимизация загрузки данных
+    @JoinColumn(name = "client_id")
+    @JsonIgnore
     private Client client;
 
-    @ManyToOne  // Связь с Master
-    @JoinColumn(name = "master_id") // Имя колонки в БД (FK)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "master_id")
+    @JsonIgnore
     private Master master;
 
-    @ManyToMany  // Связь с Item
+    @ManyToMany(cascade = CascadeType.ALL) // Если нужно, чтобы связанные товары создавались и удалялись вместе с бронью
     @JoinTable(
-            name = "booking_item", // Имя таблицы-связки
-            joinColumns = @JoinColumn(name = "booking_id"), // Колонка для Booking
-            inverseJoinColumns = @JoinColumn(name = "item_id")  // Колонка для Item
+            name = "booking_item",
+            joinColumns = @JoinColumn(name = "booking_id"),
+            inverseJoinColumns = @JoinColumn(name = "item_id")
     )
     private List<Item> items;
 
-    private String bookingDate;
+    private LocalDateTime bookingDate; // Теперь дата хранится в правильном формате
 
-    // Конструктор без аргументов (важно для Hibernate)
     public Booking() {}
 
-    // Геттеры и сеттеры для всех полей (id, client, master, items, bookingDate)
+    // Геттеры и сеттеры
     public Long getId() {
         return id;
     }
@@ -63,11 +66,11 @@ public class Booking {
         this.items = items;
     }
 
-    public String getBookingDate() {
+    public LocalDateTime getBookingDate() {
         return bookingDate;
     }
 
-    public void setBookingDate(String bookingDate) {
+    public void setBookingDate(LocalDateTime bookingDate) {
         this.bookingDate = bookingDate;
     }
 }

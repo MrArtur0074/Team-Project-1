@@ -14,18 +14,37 @@ public class MasterService {
         this.masterRepository = masterRepository;
     }
 
+    // Получить всех мастеров
     public List<Master> getAllMasters() {
         return masterRepository.findAll();
     }
 
+    // Получить мастера по ID
     public Master getMasterById(Long id) {
         return masterRepository.findById(id).orElse(null);
     }
 
-    public Master createMaster(String name, String specialization) {
-        Master master = new Master();
-        master.setName(name);
-        master.setSpecialization(specialization);
+    // Создать нового мастера
+    public Master createMaster(Master master) {
         return masterRepository.save(master);
+    }
+
+    // Обновить существующего мастера
+    public Master updateMaster(Long id, Master masterDetails) {
+        Master master = masterRepository.findById(id).orElse(null);
+        if (master != null) {
+            // Обновляем поля мастера
+            master.setName(masterDetails.getName());
+            master.setSpecialization(masterDetails.getSpecialization());
+            master.setPhotoUrl(masterDetails.getPhotoUrl());
+            return masterRepository.save(master);
+        } else {
+            throw new RuntimeException("Master not found with id: " + id);
+        }
+    }
+
+    // Удалить мастера по ID
+    public void deleteMaster(Long id) {
+        masterRepository.deleteById(id);
     }
 }

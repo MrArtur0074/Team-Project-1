@@ -1,16 +1,19 @@
 package com.example.demo.Model;
 
-import jakarta.persistence.*;
-
-@Entity
-public class Service {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ServiceModel {
     private Long id;
-
     private String name;
     private String description;
     private double price;
+
+    // Конструкторы
+    public ServiceModel() {}
+
+    public ServiceModel(String name, String description, double price) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+    }
 
     // Геттеры и сеттеры
     public Long getId() {

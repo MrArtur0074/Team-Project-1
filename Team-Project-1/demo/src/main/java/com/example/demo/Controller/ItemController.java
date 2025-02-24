@@ -2,41 +2,40 @@ package com.example.demo.Controller;
 
 import com.example.demo.Model.Item;
 import com.example.demo.Service.ItemService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/items")
+@RequestMapping("/api/items")
 public class ItemController {
-    private final ItemService service;
 
-    public ItemController(ItemService service) {
-        this.service = service;
-    }
+    @Autowired
+    private ItemService itemService;
 
     @GetMapping
     public List<Item> getAllItems() {
-        return service.getAllItems();
+        return itemService.getAllItems();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Item> getItemById(@PathVariable Long id) {
-        return service.getItemById(id)
+        return itemService.getItemById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
     public Item createItem(@RequestBody Item item) {
-        return service.createItem(item);
+        return itemService.createItem(item);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Item> updateItem(@PathVariable Long id, @RequestBody Item item) {
+    public ResponseEntity<Item> updateItem(@PathVariable Long id, @RequestBody Item itemDetails) {
         try {
-            return ResponseEntity.ok(service.updateItem(id, item));
+            return ResponseEntity.ok(itemService.updateItem(id, itemDetails));
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
@@ -44,7 +43,7 @@ public class ItemController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteItem(@PathVariable Long id) {
-        service.deleteItem(id);
+        itemService.deleteItem(id);
         return ResponseEntity.noContent().build();
     }
 }
