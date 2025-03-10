@@ -1,6 +1,5 @@
 package com.example.demo.Model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,29 +10,17 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY) // Оптимизация загрузки данных
-    @JoinColumn(name = "client_id")
-    @JsonIgnore
+    @ManyToOne
     private Client client;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "master_id")
-    @JsonIgnore
+    @ManyToOne
     private Master master;
 
-    @ManyToMany(cascade = CascadeType.ALL) // Если нужно, чтобы связанные товары создавались и удалялись вместе с бронью
-    @JoinTable(
-            name = "booking_item",
-            joinColumns = @JoinColumn(name = "booking_id"),
-            inverseJoinColumns = @JoinColumn(name = "item_id")
-    )
+    @ManyToMany
     private List<Item> items;
 
-    private LocalDateTime bookingDate; // Теперь дата хранится в правильном формате
+    private LocalDateTime bookingDate;
 
-    public Booking() {}
-
-    // Геттеры и сеттеры
     public Long getId() {
         return id;
     }

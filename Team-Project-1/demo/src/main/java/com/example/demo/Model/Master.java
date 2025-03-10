@@ -16,7 +16,6 @@ public class Master {
     @OneToMany(mappedBy = "master", cascade = CascadeType.ALL)
     private List<Booking> bookings;
 
-    // Геттеры и сеттеры
     public Long getId() {
         return id;
     }

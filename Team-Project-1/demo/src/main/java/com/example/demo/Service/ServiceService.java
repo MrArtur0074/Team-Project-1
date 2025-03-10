@@ -1,50 +1,48 @@
 package com.example.demo.Service;
 
 import com.example.demo.Model.ServiceModel;
+import com.example.demo.Repository.ServiceRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ServiceService {  // <-- Переименован с ServiceModel на ServiceService
-    private List<ServiceModel> services = new ArrayList<>();
-    private Long nextId = 1L;
+public class ServiceService {
+    private final ServiceRepository serviceRepository;
 
-    // Получить все услуги
+    public ServiceService(ServiceRepository serviceRepository) {
+        this.serviceRepository = serviceRepository;
+    }
+
     public List<ServiceModel> getAllServices() {
-        return services;
+        return serviceRepository.findAll();
     }
 
-    // Получить услугу по ID
     public Optional<ServiceModel> getServiceById(Long id) {
-        return services.stream()
-                .filter(service -> service.getId().equals(id))
-                .findFirst();
+        return serviceRepository.findById(id);
     }
 
-    // Добавить новую услугу
     public ServiceModel createService(ServiceModel service) {
-        service.setId(nextId++);
-        services.add(service);
-        return service;
+        return serviceRepository.save(service);
     }
 
-    // Обновить услугу
     public ServiceModel updateService(Long id, ServiceModel updatedService) {
-        for (int i = 0; i < services.size(); i++) {
-            if (services.get(i).getId().equals(id)) {
-                updatedService.setId(id);
-                services.set(i, updatedService);
-                return updatedService;
-            }
-        }
-        return null;
+        return serviceRepository.findById(id)
+                .map(service -> {
+                    service.setName(updatedService.getName());
+                    service.setDescription(updatedService.getDescription());
+                    service.setPrice(updatedService.getPrice());
+                    return serviceRepository.save(service);
+                })
+                .orElse(null);
     }
 
-    // Удалить услугу
     public boolean deleteService(Long id) {
-        return services.removeIf(service -> service.getId().equals(id));
+        if (serviceRepository.existsById(id)) {
+            serviceRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }
