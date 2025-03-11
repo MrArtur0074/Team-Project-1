@@ -1,0 +1,14 @@
+.history-page {
+    padding: 20px;
+  }
+  
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .history-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+  }

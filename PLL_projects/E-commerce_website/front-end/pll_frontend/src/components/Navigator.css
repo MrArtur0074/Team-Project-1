@@ -1,0 +1,16 @@
+.navigator {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 10px;
+    background-color: #f4f4f4;
+  }
+  
+  .navigator a {
+    color: #333;
+    text-decoration: none;
+  }
+  
+  .navigator a:hover {
+    text-decoration: underline;
+  }

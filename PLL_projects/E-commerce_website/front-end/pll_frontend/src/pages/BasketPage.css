@@ -1,0 +1,35 @@
+.basket-page {
+    padding: 20px;
+  }
+  
+  .basket-items {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .basket-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border: 1px solid #ccc;
+    padding: 10px;
+  }
+  
+  .basket-item img {
+    width: 100px;
+    height: auto;
+  }
+  
+  .checkout {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #333;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .checkout:hover {
+    background-color: #555;
+  }
