@@ -1,21 +1,51 @@
+/* Основные стили для страницы */
 .iphone-page {
-    padding: 20px;
-  }
-  
-  .product-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-  }
-  
-  .product-item {
-    border: 1px solid #ccc;
-    padding: 10px;
-    text-align: center;
-  }
-  
-  .product-item img {
-    width: 100%;
-    max-width: 200px;
-    height: auto;
-  }
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding-top: 80px; /* Отступ для хедера */
+  padding-bottom: 60px; /* Отступ для футера */
+}
+
+/* Заголовок */
+.iphone-page h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+/* Слоган */
+.iphone-page .tagline {
+  font-size: 1.25rem;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+/* Список моделей */
+.models-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+/* Элемент модели */
+.model-item {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 15px 20px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  font-size: 1.1rem;
+  color: #333;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.model-item:hover {
+  background-color: #f1f1f1;
+  transform: translateY(-5px);
+}

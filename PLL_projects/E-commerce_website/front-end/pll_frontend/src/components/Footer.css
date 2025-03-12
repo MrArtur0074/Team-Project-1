@@ -1,20 +1,8 @@
 .footer {
-    padding: 20px;
-    background-color: #333;
-    color: white;
-    text-align: center;
-  }
-  
-  .footer nav {
-    margin-top: 10px;
-  }
-  
-  .footer nav a {
-    color: white;
-    text-decoration: none;
-    margin: 0 10px;
-  }
-  
-  .footer nav a:hover {
-    text-decoration: underline;
-  }
+  background-color: #333;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  width: 100%; /* Растянуть на всю ширину */
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1); /* Добавим тень */
+}

@@ -5,9 +5,6 @@ import './Header.css';
 const Header = () => {
   return (
     <header className="header">
-      <div className="logo">
-        <Link to="/">Asia Store</Link>
-      </div>
       <nav className="nav">
         <Link to="/iphone">iPhone</Link>
         <Link to="/ipad">iPad</Link>
@@ -18,11 +15,11 @@ const Header = () => {
         <Link to="/audio">Audio</Link>
         <Link to="/accessories">Аксессуары</Link>
         <Link to="/gadgets">Гаджеты</Link>
-      </nav>
-      <div className="auth">
+        <Link to="/basket">Корзина</Link>
+        <Link to="/history">История покупок</Link>
         <Link to="/login">Войти</Link>
         <Link to="/registration">Регистрация</Link>
-      </div>
+      </nav>
     </header>
   );
 };
