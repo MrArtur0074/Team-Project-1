@@ -27,12 +27,19 @@ function App() {
 	async function checkUser(access) {
 		const access_token = localStorage.getItem('access_token')
 		axios.defaults.headers.common = {'Authorization': `Bearer ${access_token}`}
+		const responce = axios.get('')
 		.then((res) => {
 			setUser(true)
 			setUserInfo(res.data)
 		})
 		.catch((error) => {
-			console.log('qwqweqwe')
+			if (error.response) {
+				console.error('Authentication failed. Server responded with:', error.response.data)
+			} else if (error.request) {
+				console.error('No response received from the server. Is the server running?')
+			} else {
+				console.error('Error setting up the request:', error.message)
+			}
 		})
 	}
 

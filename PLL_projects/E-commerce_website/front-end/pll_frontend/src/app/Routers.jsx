@@ -27,15 +27,15 @@ export default function Routers() {
 				<Route path="/registration" element={<SignUpPage/>} />
 				<Route path="/login" element={<SignInPage/>} />
 				<Route path="/logout" element={<LogOutPage/>} />
-				<Route path="/iphone" element={<IPhonePage/>} />
-				<Route path="/ipad" element={<IPadPage/>} />
+				<Route path="/product/:typeofproduct" element={<IPhonePage/>} />
+				{/* <Route path="/ipad" element={<IPadPage/>} />
 				<Route path="/mac" element={<MacPage/>} />
 				<Route path="/watch" element={<WatchPage/>} />
 				<Route path="/airpods" element={<AirPodsPage/>} />
 				<Route path="/gamin" element={<GaminPage/>} />
 				<Route path="/audio" element={<AudioPage/>} />
 				<Route path="/accessories" element={<AccessoriesPage/>} />
-				<Route path="/gadgets" element={<GadgetsPage/>} />
+				<Route path="/gadgets" element={<GadgetsPage/>} /> */}
 				<Route path="/history" element={<HistoryOfProductsPage/>} />
 				<Route path="/home" element={<ProfilePage/>} />
 				<Route path="/basket" element={<BasketPage/>} />

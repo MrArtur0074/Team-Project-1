@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import './Header.css';
+import { UserContext } from '../App';
 
 const Header = () => {
+const [user, setUser] = useContext(UserContext)
+
   return (
     <header className="header">
       <nav className="nav">
@@ -17,8 +20,19 @@ const Header = () => {
         <Link to="/gadgets">Гаджеты</Link>
         <Link to="/basket">Корзина</Link>
         <Link to="/history">История покупок</Link>
-        <Link to="/login">Войти</Link>
-        <Link to="/registration">Регистрация</Link>
+        <div>
+					{!user ? (
+						<div>
+							<Link to="/login">Войти</Link>
+							<Link to="/registration">Регистрация</Link>
+						</div>
+					) : (
+						<div>
+							<Link to="/profile">Профиль</Link>
+							<Link to="/logout">Выйти</Link>
+						</div>
+					)}
+				</div>
       </nav>
     </header>
   );
