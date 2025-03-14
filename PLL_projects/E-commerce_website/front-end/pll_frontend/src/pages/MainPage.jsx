@@ -1,15 +1,22 @@
 import React from 'react';
-import Slider from '../components/Header';
+import Header from '../components/Header';
+import Slider from '../components/Slider';
+import SliderTwo from '../components/SliderTwo';
 import Navigator from '../components/Navigator';
 import './MainPage.css';
+import Footer from '../components/Footer';
 
 const MainPage = () => {
   return (
     <div className="main-page">
-      <Slider />
+      <Header />
       <Navigator />
       <h1>Популярные товары</h1>
       {/* Здесь можно добавить список популярных товаров */}
+      <Slider />
+      <h1>линейка продуктов</h1>
+      <SliderTwo />
+      <Footer />
     </div>
   );
 };

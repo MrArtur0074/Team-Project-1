@@ -1,34 +1,37 @@
-import React from 'react';
-import './iPhonePage.css';
-import Header from '../components/Header'; // Импортируйте Header
-import Footer from '../components/Footer'; // Импортируйте Footer
+import React from "react";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import "./iPhonePage.css";
+
+const iPhones = [
+  "iPhone 16 Pro Max",
+  "iPhone 16 Pro",
+  "iPhone 16 Plus",
+  "iPhone 16",
+  "iPhone 15 Pro Max",
+  "iPhone 15 Pro",
+  "iPhone 15",
+  "iPhone 14",
+  "iPhone 13",
+  "iPhone 11",
+];
 
 const iPhonePage = () => {
-  const models = [
-    'iPhone 16 Pro Max',
-    'iPhone 16 Pro',
-    'iPhone 16 Plus',
-    'iPhone 16',
-    'iPhone 15 Pro Max',
-    'iPhone 15 Pro',
-    'iPhone 15',
-    'iPhone 14',
-    'iPhone 13',
-    'iPhone 11',
-  ];
   return (
-    <div className="iphone-page">
-      <Header /> {/* Добавьте Header */}
+    <div className="iphone-container">
+      <Header />
       <h1>iPhone</h1>
-      <p className="tagline">Великолепие в каждой детали</p>
-      <div className="models-list">
-        {models.map((model, index) => (
-          <div key={index} className="model-item">
+      <p className="subtitle">Великолепие в каждой детали</p>
+      <div className="iphone-list">
+        {iPhones.map((model, index) => (
+          <div key={index} className="iphone-item">
             {model}
           </div>
         ))}
-      </div>
+        
+      </div><Footer/>
     </div>
   );
 };
+
 export default iPhonePage;

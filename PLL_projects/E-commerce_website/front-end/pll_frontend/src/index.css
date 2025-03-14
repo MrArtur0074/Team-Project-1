@@ -1,6 +1,7 @@
 body, #root {
 	margin: 0;
 	padding: 0;
+	height: 100%;
 	width: 100%;
 	min-height: 100vh;
 	display: flex;
@@ -33,6 +34,13 @@ body {
 	margin: 0 auto;
 	padding: 0 20px;
 }
+.footer {
+	background: black;
+	color: white;
+	padding: 20px;
+	text-align: center;
+	width: 100%;
+  }
 
 /* Стили для ссылок */
 a {

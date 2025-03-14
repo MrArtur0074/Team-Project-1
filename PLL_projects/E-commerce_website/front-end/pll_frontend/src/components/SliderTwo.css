@@ -1,0 +1,86 @@
+/* Основной контейнер */
+.slider-two-container {
+    width: 80%;
+    max-width: 700px;
+    margin: auto;
+    text-align: center;
+  }
+  
+  /* Категории */
+  .categories {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .categories button {
+    position: relative;
+    padding: 10px 15px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    color: #555;
+    transition: color 0.3s ease-in-out, border-bottom 0.3s ease-in-out;
+    border-bottom: 2px solid transparent;
+  }
+  
+  .categories button.active {
+    color: black;
+    border-bottom: 2px solid black;
+  }
+  
+  /* Слайдер */
+  .slider-two-wrapper {
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .slider-two-content {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .slider-two-item {
+    flex: 1;
+    padding: 20px;
+    background: #f3f3f3;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  /* Кнопки */
+  .slider-two-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.1);
+    border: none;
+    color: black;
+    padding: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    border-radius: 50%;
+  }
+  
+  .slider-two-button:hover {
+    background: rgba(0, 0, 0, 0.2);
+  }
+  
+  .prev {
+    left: -30px;
+  }
+  
+  .next {
+    right: -30px;
+  }

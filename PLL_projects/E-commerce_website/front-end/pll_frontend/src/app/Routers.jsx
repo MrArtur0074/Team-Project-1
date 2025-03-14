@@ -27,7 +27,7 @@ export default function Routers() {
 				<Route path="/registration" element={<SignUpPage/>} />
 				<Route path="/login" element={<SignInPage/>} />
 				<Route path="/logout" element={<LogOutPage/>} />
-				<Route path="/product/:typeofproduct" element={<IPhonePage/>} />
+				<Route path="/iphone" element={<IPhonePage/>} />
 				{/* <Route path="/ipad" element={<IPadPage/>} />
 				<Route path="/mac" element={<MacPage/>} />
 				<Route path="/watch" element={<WatchPage/>} />
