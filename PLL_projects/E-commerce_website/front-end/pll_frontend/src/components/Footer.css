@@ -6,8 +6,6 @@
   width: 100vw;
 }
 
-
-
 .footer-container {
   max-width: 1200px;
   margin: auto;
@@ -119,4 +117,18 @@
 
 .footer-icons a:hover {
   color: #1db954;
+}
+
+.footer nav {
+  margin-top: 5px;
+}
+
+.footer a {
+  color: white;
+  text-decoration: none;
+  margin: 0 10px;
+}
+
+.footer a:hover {
+  text-decoration: underline;
 }

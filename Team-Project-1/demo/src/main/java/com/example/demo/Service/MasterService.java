@@ -1,44 +1,26 @@
-package com.example.demo.Service;
+package com.example.demo.service;
 
-import com.example.demo.Model.Master;
-import com.example.demo.Repository.MasterRepository;
-import org.springframework.stereotype.Service;
+import com.example.demo.dto.*;
 
 import java.util.List;
 
-@Service
-public class MasterService {
-    private final MasterRepository masterRepository;
-
-    public MasterService(MasterRepository masterRepository) {
-        this.masterRepository = masterRepository;
-    }
-
-    public List<Master> getAllMasters() {
-        return masterRepository.findAll();
-    }
-
-    public Master getMasterById(Long id) {
-        return masterRepository.findById(id).orElse(null);
-    }
-
-    public Master createMaster(Master master) {
-        return masterRepository.save(master);
-    }
-
-    public Master updateMaster(Long id, Master masterDetails) {
-        Master master = masterRepository.findById(id).orElse(null);
-        if (master != null) {
-            master.setName(masterDetails.getName());
-            master.setSpecialization(masterDetails.getSpecialization());
-            master.setPhotoUrl(masterDetails.getPhotoUrl());
-            return masterRepository.save(master);
-        } else {
-            throw new RuntimeException("Master not found with id: " + id);
-        }
-    }
-
-    public void deleteMaster(Long id) {
-        masterRepository.deleteById(id);
-    }
+public interface MasterService {
+    LoginResponseDTO register(RegisterRequestDTO request);
+    LoginResponseDTO login(LoginRequestDTO request);
+    MasterProfileDTO getProfile(Long id);
+    MasterProfileDTO updateProfile(Long id, MasterProfileDTO request);
+    List<ScheduleSlotResponseDTO> getSchedule();
+    ScheduleSlotResponseDTO addScheduleSlot(ScheduleSlotRequestDTO request);
+    ScheduleSlotResponseDTO updateScheduleSlot(Long id, ScheduleSlotRequestDTO request);
+    void deleteScheduleSlot(Long id);
+    List<MasterServiceResponseDTO> getMasterServices();
+    MasterServiceResponseDTO addMasterService(MasterServiceRequestDTO request);
+    MasterServiceResponseDTO updateMasterService(Long id, MasterServiceRequestDTO request);
+    void deleteMasterService(Long id);
+    List<AppointmentResponseDTO> getCurrentAppointments(Long masterId);
+    List<AppointmentResponseDTO> getAppointmentHistory(Long masterId);
+    List<ClientTagResponseDTO> getClientTags();
+    ClientTagResponseDTO addClientTag(ClientTagRequestDTO request);
+    ClientTagResponseDTO updateClientTag(Long id, ClientTagRequestDTO request);
+    void deleteClientTag(Long id);
 }

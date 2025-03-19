@@ -3,6 +3,7 @@ import Header from '../components/Header';
 import Slider from '../components/Slider';
 import SliderTwo from '../components/SliderTwo';
 import Navigator from '../components/Navigator';
+import Footer from '../components/Footer';
 import './MainPage.css';
 import Footer from '../components/Footer';
 
@@ -17,6 +18,8 @@ const MainPage = () => {
       <h1>линейка продуктов</h1>
       <SliderTwo />
       <Footer />
+=======
+      <Footer/>
     </div>
   );
 };
