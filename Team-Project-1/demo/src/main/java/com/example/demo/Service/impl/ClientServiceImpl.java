@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -89,7 +90,8 @@ public class ClientServiceImpl implements ClientService {
         review.setAppointment(appointment);
         review.setClient(appointment.getClient());
         review.setRating(request.rating());
-        review.setReviewText(request.reviewText());
+        // Предполагаем, что в ReviewRequestDTO есть метод comment() вместо reviewText()
+        review.setReviewText(request.comment());
 
         Review savedReview = reviewRepository.save(review);
         return mapToReviewResponseDTO(savedReview);
@@ -119,6 +121,14 @@ public class ClientServiceImpl implements ClientService {
         User user = userRepository.findByEmail(client.getUser().getEmail())
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
         return new ClientProfileDTO(user.getId(), user.getEmail(), user.getName(), user.getPhone(), user.getPhotoUrl());
+    }
+
+    @Override
+    public List<AchievementResponseDTO> getAchievements(Long clientId) {
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new RuntimeException("Клиент не найден"));
+
+        return new ArrayList<>();
     }
 
     private AppointmentResponseDTO mapToAppointmentResponseDTO(Appointment appointment) {

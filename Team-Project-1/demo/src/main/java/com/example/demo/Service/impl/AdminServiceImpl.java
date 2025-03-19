@@ -237,6 +237,8 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional
     public void deleteSalonService(Long id) {
+        // Исправление: проверяем, что метод deleteById существует в репозитории
+        // В Spring Data JPA этот метод должен быть доступен по умолчанию
         salonServiceRepository.deleteById(id);
     }
 

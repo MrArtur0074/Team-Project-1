@@ -19,16 +19,21 @@ public class MasterServiceImpl implements MasterService {
     private final MasterServiceRepository masterServiceRepository;
     private final ClientTagRepository clientTagRepository;
     private final AppointmentRepository appointmentRepository;
+    private final SalonServiceRepository salonServiceRepository;
+    private final ClientRepository clientRepository;
 
     public MasterServiceImpl(UserRepository userRepository, MasterRepository masterRepository,
                              ScheduleSlotRepository scheduleSlotRepository, MasterServiceRepository masterServiceRepository,
-                             ClientTagRepository clientTagRepository, AppointmentRepository appointmentRepository) {
+                             ClientTagRepository clientTagRepository, AppointmentRepository appointmentRepository,
+                             SalonServiceRepository salonServiceRepository, ClientRepository clientRepository) {
         this.userRepository = userRepository;
         this.masterRepository = masterRepository;
         this.scheduleSlotRepository = scheduleSlotRepository;
         this.masterServiceRepository = masterServiceRepository;
         this.clientTagRepository = clientTagRepository;
         this.appointmentRepository = appointmentRepository;
+        this.salonServiceRepository = salonServiceRepository;
+        this.clientRepository = clientRepository;
     }
 
     @Override
@@ -48,7 +53,7 @@ public class MasterServiceImpl implements MasterService {
                 .orElseThrow(() -> new RuntimeException("Мастер не найден"));
         ScheduleSlot slot = new ScheduleSlot();
         slot.setMaster(master);
-        slot.setDayOfWeek(request.dayOfWeek());
+        slot.setDayOfWeek(String.valueOf(request.dayOfWeek()));
         slot.setStartTime(request.startTime());
         slot.setEndTime(request.endTime());
 
@@ -61,7 +66,7 @@ public class MasterServiceImpl implements MasterService {
     public ScheduleSlotResponseDTO updateScheduleSlot(Long slotId, ScheduleSlotRequestDTO request) {
         ScheduleSlot slot = scheduleSlotRepository.findById(slotId)
                 .orElseThrow(() -> new RuntimeException("Слот не найден"));
-        slot.setDayOfWeek(request.dayOfWeek());
+        slot.setDayOfWeek(String.valueOf(request.dayOfWeek()));
         slot.setStartTime(request.startTime());
         slot.setEndTime(request.endTime());
 
@@ -87,19 +92,19 @@ public class MasterServiceImpl implements MasterService {
         SalonService salonService = salonServiceRepository.findById(request.salonServiceId())
                 .orElseThrow(() -> new RuntimeException("Услуга не найдена"));
 
-        MasterService masterServiceEntity = new MasterService();
+        com.example.demo.entity.MasterService masterServiceEntity = new com.example.demo.entity.MasterService();
         masterServiceEntity.setMaster(master);
         masterServiceEntity.setSalonService(salonService);
         masterServiceEntity.setCost(request.cost());
 
-        MasterService savedMasterService = masterServiceRepository.save(masterServiceEntity);
+        com.example.demo.entity.MasterService savedMasterService = masterServiceRepository.save(masterServiceEntity);
         return mapToMasterServiceResponseDTO(savedMasterService);
     }
 
     @Override
     @Transactional
     public MasterServiceResponseDTO updateMasterService(Long masterServiceId, MasterServiceRequestDTO request) {
-        MasterService masterServiceEntity = masterServiceRepository.findById(masterServiceId)
+        com.example.demo.entity.MasterService masterServiceEntity = masterServiceRepository.findById(masterServiceId)
                 .orElseThrow(() -> new RuntimeException("Услуга мастера не найдена"));
         SalonService salonService = salonServiceRepository.findById(request.salonServiceId())
                 .orElseThrow(() -> new RuntimeException("Услуга не найдена"));
@@ -107,7 +112,7 @@ public class MasterServiceImpl implements MasterService {
         masterServiceEntity.setSalonService(salonService);
         masterServiceEntity.setCost(request.cost());
 
-        MasterService updatedMasterService = masterServiceRepository.save(masterServiceEntity);
+        com.example.demo.entity.MasterService updatedMasterService = masterServiceRepository.save(masterServiceEntity);
         return mapToMasterServiceResponseDTO(updatedMasterService);
     }
 
@@ -152,6 +157,14 @@ public class MasterServiceImpl implements MasterService {
     }
 
     @Override
+    @Transactional
+    public void deleteClientTag(Long tagId) {
+        ClientTag tag = clientTagRepository.findById(tagId)
+                .orElseThrow(() -> new RuntimeException("Тег не найден"));
+        clientTagRepository.delete(tag);
+    }
+
+    @Override
     public List<AppointmentResponseDTO> getAppointments(Long masterId) {
         Master master = masterRepository.findById(masterId)
                 .orElseThrow(() -> new RuntimeException("Мастер не найден"));
@@ -173,14 +186,13 @@ public class MasterServiceImpl implements MasterService {
     private ScheduleSlotResponseDTO mapToScheduleSlotResponseDTO(ScheduleSlot slot) {
         return new ScheduleSlotResponseDTO(
                 slot.getId(),
-                slot.getMaster().getId(),
-                slot.getDayOfWeek(),
+                Integer.parseInt(slot.getDayOfWeek()),
                 slot.getStartTime(),
                 slot.getEndTime()
         );
     }
 
-    private MasterServiceResponseDTO mapToMasterServiceResponseDTO(MasterService msEntity) {
+    private MasterServiceResponseDTO mapToMasterServiceResponseDTO(com.example.demo.entity.MasterService msEntity) {
         return new MasterServiceResponseDTO(
                 msEntity.getId(),
                 msEntity.getMaster().getId(),
@@ -193,7 +205,6 @@ public class MasterServiceImpl implements MasterService {
         return new ClientTagResponseDTO(
                 ct.getId(),
                 ct.getMaster().getId(),
-                ct.getClient().getId(),
                 ct.getTag()
         );
     }
