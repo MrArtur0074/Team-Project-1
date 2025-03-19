@@ -12,5 +12,9 @@ public class SalonService {
     private Long id;
 
     private String name;
+
+    @Column(name = "default_cost")
+    private Double defaultCost;
+
     private String description;
 }

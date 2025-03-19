@@ -3,7 +3,8 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "appointments")
@@ -25,8 +26,19 @@ public class Appointment {
     @JoinColumn(name = "service_id")
     private SalonService service;
 
-    private LocalDateTime dateTime;
-    private String status; // "scheduled", "completed", etc.
+    @Column(name = "appointment_date")
+    private LocalDate appointmentDate;
+
+    @Column(name = "appointment_time")
+    private LocalTime appointmentTime;
+
+    private String status;
+
+    @Column(name = "wants_photo")
+    private Boolean wantsPhoto;
+
+    @Column(name = "client_message")
     private String clientMessage;
-    private String photoUrl;
+
+    private String feedback;
 }

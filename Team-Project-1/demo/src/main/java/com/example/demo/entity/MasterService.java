@@ -16,8 +16,9 @@ public class MasterService {
     private Master master;
 
     @ManyToOne
-    @JoinColumn(name = "salon_service_id")
+    @JoinColumn(name = "service_id")
     private SalonService salonService;
 
-    private Double price;
+    @Column(name = "cost")
+    private Double cost;
 }

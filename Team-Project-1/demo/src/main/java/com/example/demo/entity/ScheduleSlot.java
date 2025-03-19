@@ -6,7 +6,7 @@ import lombok.Data;
 import java.time.LocalTime;
 
 @Entity
-@Table(name = "schedule_slots")
+@Table(name = "schedule")
 @Data
 public class ScheduleSlot {
     @Id
@@ -17,7 +17,12 @@ public class ScheduleSlot {
     @JoinColumn(name = "master_id")
     private Master master;
 
-    private Integer dayOfWeek; // 1-7
+    @Column(name = "day_of_week")
+    private String dayOfWeek;
+
+    @Column(name = "start_time")
     private LocalTime startTime;
+
+    @Column(name = "end_time")
     private LocalTime endTime;
 }

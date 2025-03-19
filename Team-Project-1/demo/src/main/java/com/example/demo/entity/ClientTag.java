@@ -19,5 +19,6 @@ public class ClientTag {
     @JoinColumn(name = "master_id")
     private Master master;
 
-    private String tagText;
+    @Column(name = "tag")
+    private String tag;
 }

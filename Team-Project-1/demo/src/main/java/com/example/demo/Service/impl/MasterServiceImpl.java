@@ -3,11 +3,9 @@ package com.example.demo.service.impl;
 import com.example.demo.dto.*;
 import com.example.demo.entity.*;
 import com.example.demo.repository.*;
-import com.example.demo.security.JwtUtil;
 import com.example.demo.service.MasterService;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,233 +17,197 @@ public class MasterServiceImpl implements MasterService {
     private final MasterRepository masterRepository;
     private final ScheduleSlotRepository scheduleSlotRepository;
     private final MasterServiceRepository masterServiceRepository;
-    private final AppointmentRepository appointmentRepository;
     private final ClientTagRepository clientTagRepository;
-    private final ClientRepository clientRepository;
-    private final SalonServiceRepository salonServiceRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
+    private final AppointmentRepository appointmentRepository;
 
     public MasterServiceImpl(UserRepository userRepository, MasterRepository masterRepository,
                              ScheduleSlotRepository scheduleSlotRepository, MasterServiceRepository masterServiceRepository,
-                             AppointmentRepository appointmentRepository, ClientTagRepository clientTagRepository,
-                             ClientRepository clientRepository, SalonServiceRepository salonServiceRepository,
-                             PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+                             ClientTagRepository clientTagRepository, AppointmentRepository appointmentRepository) {
         this.userRepository = userRepository;
         this.masterRepository = masterRepository;
         this.scheduleSlotRepository = scheduleSlotRepository;
         this.masterServiceRepository = masterServiceRepository;
-        this.appointmentRepository = appointmentRepository;
         this.clientTagRepository = clientTagRepository;
-        this.clientRepository = clientRepository;
-        this.salonServiceRepository = salonServiceRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtUtil = jwtUtil;
+        this.appointmentRepository = appointmentRepository;
     }
 
     @Override
-    public LoginResponseDTO register(RegisterRequestDTO request) {
-        User user = new User();
-        user.setEmail(request.email());
-        user.setPassword(passwordEncoder.encode(request.password()));
-        user.setName(request.name());
-        user.setPhone(request.phone());
-        user.setRole("MASTER");
-        user.setIsPending(true);
-        user = userRepository.save(user);
-
-        Master master = new Master();
-        master.setUser(user);
-        masterRepository.save(master);
-
-        return new LoginResponseDTO(null, user.getId(), "MASTER");
-    }
-
-    @Override
-    public LoginResponseDTO login(LoginRequestDTO request) {
-        User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
-            throw new RuntimeException("Invalid password");
-        }
-        if (user.getIsPending() != null && user.getIsPending()) {
-            throw new RuntimeException("Account is pending approval");
-        }
-        String token = jwtUtil.generateToken(new org.springframework.security.core.userdetails.User(
-                user.getEmail(), user.getPassword(), List.of(() -> "ROLE_" + user.getRole())));
-        return new LoginResponseDTO(token, user.getId(), user.getRole());
-    }
-
-    @Override
-    public MasterProfileDTO getProfile(Long id) {
-        Master master = masterRepository.findById(id).orElseThrow(() -> new RuntimeException("Master not found"));
-        User user = master.getUser();
-        return new MasterProfileDTO(user.getId(), user.getEmail(), user.getName(), user.getPhone(), user.getPhotoUrl(),
-                master.getRating(), master.getExperienceYears());
-    }
-
-    @Override
-    public MasterProfileDTO updateProfile(Long id, MasterProfileDTO request) {
-        Master master = masterRepository.findById(id).orElseThrow(() -> new RuntimeException("Master not found"));
-        User user = master.getUser();
-        user.setName(request.name());
-        user.setPhone(request.phone());
-        user.setPhotoUrl(request.photoUrl());
-        master.setExperienceYears(request.experienceYears());
-        userRepository.save(user);
-        masterRepository.save(master);
-        return new MasterProfileDTO(user.getId(), user.getEmail(), user.getName(), user.getPhone(), user.getPhotoUrl(),
-                master.getRating(), master.getExperienceYears());
-    }
-
-    @Override
-    public List<ScheduleSlotResponseDTO> getSchedule() {
-        Master master = masterRepository.findByUserId(getCurrentUserId())
-                .orElseThrow(() -> new RuntimeException("Master not found"));
-        return scheduleSlotRepository.findByMasterId(master.getId())
+    public List<ScheduleSlotResponseDTO> getSchedule(Long masterId) {
+        Master master = masterRepository.findById(masterId)
+                .orElseThrow(() -> new RuntimeException("Мастер не найден"));
+        return scheduleSlotRepository.findByMaster(master)
                 .stream()
-                .map(s -> new ScheduleSlotResponseDTO(s.getId(), s.getDayOfWeek(), s.getStartTime(), s.getEndTime()))
+                .map(this::mapToScheduleSlotResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public ScheduleSlotResponseDTO addScheduleSlot(ScheduleSlotRequestDTO request) {
-        Master master = masterRepository.findByUserId(getCurrentUserId())
-                .orElseThrow(() -> new RuntimeException("Master not found"));
+    @Transactional
+    public ScheduleSlotResponseDTO createScheduleSlot(Long masterId, ScheduleSlotRequestDTO request) {
+        Master master = masterRepository.findById(masterId)
+                .orElseThrow(() -> new RuntimeException("Мастер не найден"));
         ScheduleSlot slot = new ScheduleSlot();
         slot.setMaster(master);
         slot.setDayOfWeek(request.dayOfWeek());
         slot.setStartTime(request.startTime());
         slot.setEndTime(request.endTime());
-        slot = scheduleSlotRepository.save(slot);
-        return new ScheduleSlotResponseDTO(slot.getId(), slot.getDayOfWeek(), slot.getStartTime(), slot.getEndTime());
+
+        ScheduleSlot savedSlot = scheduleSlotRepository.save(slot);
+        return mapToScheduleSlotResponseDTO(savedSlot);
     }
 
     @Override
-    public ScheduleSlotResponseDTO updateScheduleSlot(Long id, ScheduleSlotRequestDTO request) {
-        ScheduleSlot slot = scheduleSlotRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Schedule slot not found"));
+    @Transactional
+    public ScheduleSlotResponseDTO updateScheduleSlot(Long slotId, ScheduleSlotRequestDTO request) {
+        ScheduleSlot slot = scheduleSlotRepository.findById(slotId)
+                .orElseThrow(() -> new RuntimeException("Слот не найден"));
         slot.setDayOfWeek(request.dayOfWeek());
         slot.setStartTime(request.startTime());
         slot.setEndTime(request.endTime());
-        slot = scheduleSlotRepository.save(slot);
-        return new ScheduleSlotResponseDTO(slot.getId(), slot.getDayOfWeek(), slot.getStartTime(), slot.getEndTime());
+
+        ScheduleSlot updatedSlot = scheduleSlotRepository.save(slot);
+        return mapToScheduleSlotResponseDTO(updatedSlot);
     }
 
     @Override
-    public void deleteScheduleSlot(Long id) {
-        scheduleSlotRepository.deleteById(id);
-    }
-
-    @Override
-    public List<MasterServiceResponseDTO> getMasterServices() {
-        Master master = masterRepository.findByUserId(getCurrentUserId())
-                .orElseThrow(() -> new RuntimeException("Master not found"));
-        return masterServiceRepository.findByMasterId(master.getId())
+    public List<MasterServiceResponseDTO> getMasterServices(Long masterId) {
+        Master master = masterRepository.findById(masterId)
+                .orElseThrow(() -> new RuntimeException("Мастер не найден"));
+        return masterServiceRepository.findByMaster(master)
                 .stream()
-                .map(ms -> new MasterServiceResponseDTO(ms.getId(), ms.getMaster().getId(), ms.getSalonService().getId(),
-                        ms.getSalonService().getName(), ms.getPrice()))
+                .map(this::mapToMasterServiceResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public MasterServiceResponseDTO addMasterService(MasterServiceRequestDTO request) {
-        Master master = masterRepository.findByUserId(getCurrentUserId())
-                .orElseThrow(() -> new RuntimeException("Master not found"));
+    @Transactional
+    public MasterServiceResponseDTO createMasterService(Long masterId, MasterServiceRequestDTO request) {
+        Master master = masterRepository.findById(masterId)
+                .orElseThrow(() -> new RuntimeException("Мастер не найден"));
         SalonService salonService = salonServiceRepository.findById(request.salonServiceId())
-                .orElseThrow(() -> new RuntimeException("Salon service not found"));
-        MasterService ms = new MasterService();
-        ms.setMaster(master);
-        ms.setSalonService(salonService);
-        ms.setPrice(request.price());
-        ms = masterServiceRepository.save(ms);
-        return new MasterServiceResponseDTO(ms.getId(), ms.getMaster().getId(), ms.getSalonService().getId(),
-                ms.getSalonService().getName(), ms.getPrice());
+                .orElseThrow(() -> new RuntimeException("Услуга не найдена"));
+
+        MasterService masterServiceEntity = new MasterService();
+        masterServiceEntity.setMaster(master);
+        masterServiceEntity.setSalonService(salonService);
+        masterServiceEntity.setCost(request.cost());
+
+        MasterService savedMasterService = masterServiceRepository.save(masterServiceEntity);
+        return mapToMasterServiceResponseDTO(savedMasterService);
     }
 
     @Override
-    public MasterServiceResponseDTO updateMasterService(Long id, MasterServiceRequestDTO request) {
-        MasterService ms = masterServiceRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Master service not found"));
-        ms.setPrice(request.price());
-        ms = masterServiceRepository.save(ms);
-        return new MasterServiceResponseDTO(ms.getId(), ms.getMaster().getId(), ms.getSalonService().getId(),
-                ms.getSalonService().getName(), ms.getPrice());
+    @Transactional
+    public MasterServiceResponseDTO updateMasterService(Long masterServiceId, MasterServiceRequestDTO request) {
+        MasterService masterServiceEntity = masterServiceRepository.findById(masterServiceId)
+                .orElseThrow(() -> new RuntimeException("Услуга мастера не найдена"));
+        SalonService salonService = salonServiceRepository.findById(request.salonServiceId())
+                .orElseThrow(() -> new RuntimeException("Услуга не найдена"));
+
+        masterServiceEntity.setSalonService(salonService);
+        masterServiceEntity.setCost(request.cost());
+
+        MasterService updatedMasterService = masterServiceRepository.save(masterServiceEntity);
+        return mapToMasterServiceResponseDTO(updatedMasterService);
     }
 
     @Override
-    public void deleteMasterService(Long id) {
-        masterServiceRepository.deleteById(id);
-    }
-
-    @Override
-    public List<AppointmentResponseDTO> getCurrentAppointments(Long masterId) {
-        return appointmentRepository.findByMasterIdAndStatus(masterId, "scheduled")
+    public List<ClientTagResponseDTO> getClientTags(Long masterId, Long clientId) {
+        Master master = masterRepository.findById(masterId)
+                .orElseThrow(() -> new RuntimeException("Мастер не найден"));
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new RuntimeException("Клиент не найден"));
+        return clientTagRepository.findByMasterAndClient(master, client)
                 .stream()
-                .map(this::mapToAppointmentResponse)
+                .map(this::mapToClientTagResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<AppointmentResponseDTO> getAppointmentHistory(Long masterId) {
-        return appointmentRepository.findByMasterIdAndStatus(masterId, "completed")
-                .stream()
-                .map(this::mapToAppointmentResponse)
-                .collect(Collectors.toList());
-    }
+    @Transactional
+    public ClientTagResponseDTO createClientTag(Long masterId, Long clientId, ClientTagRequestDTO request) {
+        Master master = masterRepository.findById(masterId)
+                .orElseThrow(() -> new RuntimeException("Мастер не найден"));
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new RuntimeException("Клиент не найден"));
 
-    @Override
-    public List<ClientTagResponseDTO> getClientTags() {
-        Master master = masterRepository.findByUserId(getCurrentUserId())
-                .orElseThrow(() -> new RuntimeException("Master not found"));
-        return clientTagRepository.findByMasterId(master.getId())
-                .stream()
-                .map(ct -> new ClientTagResponseDTO(ct.getId(), ct.getClient().getId(), ct.getTagText()))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public ClientTagResponseDTO addClientTag(ClientTagRequestDTO request) {
-        Master master = masterRepository.findByUserId(getCurrentUserId())
-                .orElseThrow(() -> new RuntimeException("Master not found"));
-        Client client = clientRepository.findById(request.clientId())
-                .orElseThrow(() -> new RuntimeException("Client not found"));
         ClientTag tag = new ClientTag();
         tag.setMaster(master);
         tag.setClient(client);
-        tag.setTagText(request.tagText());
-        tag = clientTagRepository.save(tag);
-        return new ClientTagResponseDTO(tag.getId(), tag.getClient().getId(), tag.getTagText());
+        tag.setTag(request.tag());
+
+        ClientTag savedTag = clientTagRepository.save(tag);
+        return mapToClientTagResponseDTO(savedTag);
     }
 
     @Override
-    public ClientTagResponseDTO updateClientTag(Long id, ClientTagRequestDTO request) {
-        ClientTag tag = clientTagRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Client tag not found"));
-        tag.setTagText(request.tagText());
-        tag = clientTagRepository.save(tag);
-        return new ClientTagResponseDTO(tag.getId(), tag.getClient().getId(), tag.getTagText());
+    @Transactional
+    public ClientTagResponseDTO updateClientTag(Long tagId, ClientTagRequestDTO request) {
+        ClientTag tag = clientTagRepository.findById(tagId)
+                .orElseThrow(() -> new RuntimeException("Тег не найден"));
+        tag.setTag(request.tag());
+
+        ClientTag updatedTag = clientTagRepository.save(tag);
+        return mapToClientTagResponseDTO(updatedTag);
     }
 
     @Override
-    public void deleteClientTag(Long id) {
-        clientTagRepository.deleteById(id);
+    public List<AppointmentResponseDTO> getAppointments(Long masterId) {
+        Master master = masterRepository.findById(masterId)
+                .orElseThrow(() -> new RuntimeException("Мастер не найден"));
+        return appointmentRepository.findByMaster(master)
+                .stream()
+                .map(this::mapToAppointmentResponseDTO)
+                .collect(Collectors.toList());
     }
 
-    private AppointmentResponseDTO mapToAppointmentResponse(Appointment appointment) {
-        return new AppointmentResponseDTO(
-                appointment.getId(),
-                appointment.getDateTime(),
-                appointment.getStatus(),
-                appointment.getClientMessage(),
-                appointment.getPhotoUrl(),
-                appointment.getService().getId(),
-                appointment.getMaster() != null ? appointment.getMaster().getId() : null
+    @Override
+    public MasterProfileDTO getProfile(Long id) {
+        Master master = masterRepository.findByUserId(id)
+                .orElseThrow(() -> new RuntimeException("Мастер не найден"));
+        User user = userRepository.findByEmail(master.getUser().getEmail())
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        return new MasterProfileDTO(user.getId(), user.getEmail(), user.getName(), user.getPhone(), user.getPhotoUrl(), master.getRating(), master.getExperienceYears());
+    }
+
+    private ScheduleSlotResponseDTO mapToScheduleSlotResponseDTO(ScheduleSlot slot) {
+        return new ScheduleSlotResponseDTO(
+                slot.getId(),
+                slot.getMaster().getId(),
+                slot.getDayOfWeek(),
+                slot.getStartTime(),
+                slot.getEndTime()
         );
     }
 
-    private Long getCurrentUserId() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found")).getId();
+    private MasterServiceResponseDTO mapToMasterServiceResponseDTO(MasterService msEntity) {
+        return new MasterServiceResponseDTO(
+                msEntity.getId(),
+                msEntity.getMaster().getId(),
+                msEntity.getSalonService().getId(),
+                msEntity.getCost()
+        );
+    }
+
+    private ClientTagResponseDTO mapToClientTagResponseDTO(ClientTag ct) {
+        return new ClientTagResponseDTO(
+                ct.getId(),
+                ct.getMaster().getId(),
+                ct.getClient().getId(),
+                ct.getTag()
+        );
+    }
+
+    private AppointmentResponseDTO mapToAppointmentResponseDTO(Appointment appointment) {
+        return new AppointmentResponseDTO(
+                appointment.getId(),
+                appointment.getClient().getId(),
+                appointment.getMaster().getId(),
+                appointment.getService().getId(),
+                appointment.getAppointmentDate().atTime(appointment.getAppointmentTime()),
+                appointment.getStatus(),
+                appointment.getClientMessage(),
+                appointment.getFeedback()
+        );
     }
 }

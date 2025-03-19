@@ -1,10 +1,14 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 public interface AdminService {
+    @Transactional
+    LoginResponseDTO register(RegisterRequestDTO request);
+
     LoginResponseDTO login(LoginRequestDTO request);
     AdminProfileDTO getProfile(Long id);
     AdminProfileDTO updateProfile(Long id, AdminProfileDTO request);

@@ -11,12 +11,17 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String name;
     private String email;
     private String password;
-    private String name;
     private String phone;
-    private String photoUrl;
-    private String role;
 
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    @Column(name = "photo")
+    private String photoUrl;
+
+    @Column(name = "is_pending")
     private Boolean isPending;
 }

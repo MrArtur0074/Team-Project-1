@@ -4,23 +4,17 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "reviews")
+@Table(name = "achievements")
 @Data
-public class Review {
+public class Achievement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "appointment_id")
-    private Appointment appointment;
-
-    @ManyToOne
     @JoinColumn(name = "client_id")
     private Client client;
 
-    private Integer rating;
-
-    @Column(name = "review_text")
-    private String reviewText;
+    @Column(name = "achievement_data")
+    private String achievementData;
 }
