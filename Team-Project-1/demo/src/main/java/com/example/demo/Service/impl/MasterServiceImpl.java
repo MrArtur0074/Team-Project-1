@@ -21,6 +21,7 @@ public class MasterServiceImpl implements MasterService {
     private final MasterServiceRepository masterServiceRepository;
     private final AppointmentRepository appointmentRepository;
     private final ClientTagRepository clientTagRepository;
+    private final ClientRepository clientRepository;
     private final SalonServiceRepository salonServiceRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
@@ -28,13 +29,15 @@ public class MasterServiceImpl implements MasterService {
     public MasterServiceImpl(UserRepository userRepository, MasterRepository masterRepository,
                              ScheduleSlotRepository scheduleSlotRepository, MasterServiceRepository masterServiceRepository,
                              AppointmentRepository appointmentRepository, ClientTagRepository clientTagRepository,
-                             SalonServiceRepository salonServiceRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+                             ClientRepository clientRepository, SalonServiceRepository salonServiceRepository,
+                             PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.masterRepository = masterRepository;
         this.scheduleSlotRepository = scheduleSlotRepository;
         this.masterServiceRepository = masterServiceRepository;
         this.appointmentRepository = appointmentRepository;
         this.clientTagRepository = clientTagRepository;
+        this.clientRepository = clientRepository;
         this.salonServiceRepository = salonServiceRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
@@ -48,14 +51,14 @@ public class MasterServiceImpl implements MasterService {
         user.setName(request.name());
         user.setPhone(request.phone());
         user.setRole("MASTER");
-        user.setIsPending(true); // Требуется подтверждение админом
+        user.setIsPending(true);
         user = userRepository.save(user);
 
         Master master = new Master();
         master.setUser(user);
         masterRepository.save(master);
 
-        return new LoginResponseDTO(null, user.getId(), "MASTER"); // Токен не выдаётся до подтверждения
+        return new LoginResponseDTO(null, user.getId(), "MASTER");
     }
 
     @Override
@@ -231,9 +234,14 @@ public class MasterServiceImpl implements MasterService {
 
     private AppointmentResponseDTO mapToAppointmentResponse(Appointment appointment) {
         return new AppointmentResponseDTO(
-                appointment.getId(), appointment.getClient().getId(), appointment.getService().getId(),
-                appointment.getMaster().getId(), appointment.getDateTime(), appointment.getStatus(),
-                appointment.getClientMessage(), appointment.getPhotoUrl());
+                appointment.getId(),
+                appointment.getDateTime(),
+                appointment.getStatus(),
+                appointment.getClientMessage(),
+                appointment.getPhotoUrl(),
+                appointment.getService().getId(),
+                appointment.getMaster() != null ? appointment.getMaster().getId() : null
+        );
     }
 
     private Long getCurrentUserId() {

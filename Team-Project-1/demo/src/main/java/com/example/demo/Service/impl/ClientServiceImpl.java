@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @Service
@@ -149,6 +150,47 @@ public class ClientServiceImpl implements ClientService {
         review = reviewRepository.save(review);
 
         return new ReviewResponseDTO(review.getId(), review.getRating(), review.getComment());
+    }
+
+    @Override
+    public List<ReviewResponseDTO> getReviewsByClientId(Long clientId) {
+        // Получаем клиента
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new RuntimeException("Client not found"));
+
+        // Получаем все отзывы клиента
+        List<Review> reviews = reviewRepository.findByClientId(clientId);
+
+        // Преобразуем в DTO
+        return reviews.stream()
+                .map(review -> new ReviewResponseDTO(
+                        review.getId(),
+                        review.getRating(),
+                        review.getComment()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getAchievements(Long clientId) {
+        // Простая реализация, можно расширить в будущем
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new RuntimeException("Client not found"));
+
+        List<String> achievements = new ArrayList<>();
+
+        // Пример простых достижений
+        long appointmentCount = appointmentRepository.countByClientId(client.getId());
+        if (appointmentCount >= 1) {
+            achievements.add("First Appointment");
+        }
+        if (appointmentCount >= 5) {
+            achievements.add("Regular Client");
+        }
+        if (appointmentCount >= 10) {
+            achievements.add("Salon Enthusiast");
+        }
+
+        return achievements;
     }
 
     private Long getCurrentUserId() {

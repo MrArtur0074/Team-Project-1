@@ -1,10 +1,11 @@
 package com.example.demo.repository;
 
-import com.example.demo.entity.ScheduleSlot;
+import com.example.demo.entity.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface ScheduleSlotRepository extends JpaRepository<ScheduleSlot, Long> {
-    List<ScheduleSlot> findByMasterId(Long masterId);
+public interface ReviewRepository extends JpaRepository<Review, Long> {
+    List<Review> findByClientId(Long clientId);
+    List<Review> findByMasterId(Long masterId);
 }
